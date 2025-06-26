@@ -9,10 +9,13 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.Recipe;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.umnirium.mc.craftcost.CraftCost.plugin;
@@ -55,7 +58,23 @@ public class CommandUtils {
 
         if (MaterialUtils.isMaterialValid(Material.matchMaterial(material.toUpperCase()))) {
             List<Recipe> recipes = RecipeUtils.getRecipes(Material.matchMaterial(material));
-            RecipeUtils.ListIngredients(recipes);
+
+            Map<Material, Integer> ingredients = RecipeUtils.ListIngredients(recipes);
+
+            CommandSender sender = context.getSource().getSender();
+
+            sender.sendMessage(MessageUtils.componentReplace("<aqua>[CraftCost]</aqua> <gray>Items needed for <material>:</gray>",
+                    "material",
+                    Component.text(material, NamedTextColor.GOLD)
+                    ));
+
+            StringBuilder message = new StringBuilder();
+
+            for (Material ingredient : ingredients.keySet()) {
+                message.append("\n").append("<gold>").append(ingredient.name()).append("</gold> : <gray>").append(ingredients.get(ingredient)).append("</gray>");
+            }
+
+            sender.sendMessage(MessageUtils.component(message.toString()));
         }
 
         return Command.SINGLE_SUCCESS;
