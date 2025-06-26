@@ -14,10 +14,13 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static com.umnirium.mc.craftcost.CraftCost.plugin;
 
@@ -61,19 +64,39 @@ public class CommandUtils {
         if (material != null && MaterialUtils.isMaterialValid(material)) {
             List<Recipe> recipes = plugin.getServer().getRecipesFor(new ItemStack(material));
 
-            Map<Material, Integer> ingredients = RecipeUtils.ListIngredients(recipes);
+            Map<Recipe, Map<RecipeChoice, Integer>> ingredients = RecipeUtils.ListIngredients(recipes);
 
             CommandSender sender = context.getSource().getSender();
 
-            sender.sendMessage(MessageUtils.componentReplace("<aqua>[CraftCost]</aqua> <gray>Items needed for <material>:</gray>",
-                    "material",
-                    Component.text(materialName, NamedTextColor.GOLD)
-                    ));
-
             StringBuilder message = new StringBuilder();
+            int count = 1;
 
-            for (Material ingredient : ingredients.keySet()) {
-                message.append("\n").append("<gold>").append(ingredient.name()).append("</gold> : <gray>").append(ingredients.get(ingredient)).append("</gray>");
+            message.append("<aqua>[CraftCost]</aqua> <gray>Items needed for <gold>").append(materialName).append("</gold>:<gray>");
+
+            for (Recipe recipe : ingredients.keySet()) {
+                message.append("\n\nRecipe ").append(count).append(":");
+
+                for (RecipeChoice recipeChoice : ingredients.get(recipe).keySet()) {
+                    List<Material> materials = new ArrayList<>();
+
+                    message.append("\n").append("<gold>");
+
+                    if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice) {
+                        materials = materialChoice.getChoices();
+                    }
+
+                    else if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
+                        materials = exactChoice.getChoices().stream().map(ItemStack::getType).toList();
+                    }
+
+                    String materialsJoined = materials.stream()
+                            .map(mat -> mat.name().toLowerCase())
+                            .collect(Collectors.joining(", "));
+
+                    message.append(materialsJoined).append("</gold> : <gray>").append(ingredients.get(recipe).get(recipeChoice)).append("</gray>");
+                }
+
+                count++;
             }
 
             sender.sendMessage(MessageUtils.component(message.toString()));

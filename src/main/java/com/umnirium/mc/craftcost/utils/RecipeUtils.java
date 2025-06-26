@@ -1,29 +1,32 @@
 package com.umnirium.mc.craftcost.utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.inventory.*;
 
 import java.util.*;
 
 public class RecipeUtils {
-    public static Map<Material, Integer> ListIngredients(List<Recipe> recipes) {
-        Map<Material, Integer> ingredients = new HashMap<>();
+    public static Map<Recipe, Map<RecipeChoice, Integer>> ListIngredients(List<Recipe> recipes) {
+        Map<Recipe, Map<RecipeChoice, Integer>> allRecipes = new HashMap<>();
+        Map<RecipeChoice, Integer> ingredients = new HashMap<>();
 
         for (Recipe recipe : recipes) {
             if (recipe instanceof ShapedRecipe shapedRecipe) {
-                handleShapedRecipe(ingredients, shapedRecipe);
+                ingredients = handleShapedRecipe(shapedRecipe);
             }
 
             else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-                handleShapelessRecipe(ingredients, shapelessRecipe);
+                ingredients = handleShapelessRecipe(shapelessRecipe);
             }
+
+            allRecipes.put(recipe, ingredients);
         }
 
-        return ingredients;
+        return allRecipes;
     }
 
-    private static void handleShapedRecipe(Map<Material, Integer> ingredients, ShapedRecipe shapedRecipe) {
+    private static Map<RecipeChoice, Integer> handleShapedRecipe(ShapedRecipe shapedRecipe) {
+        Map<RecipeChoice, Integer> ingredients = new HashMap<>();
+
         String[] shape = shapedRecipe.getShape();
         Map<Character, RecipeChoice> choices = shapedRecipe.getChoiceMap();
 
@@ -31,56 +34,38 @@ public class RecipeUtils {
             for (char key : row.toCharArray()) {
                 RecipeChoice recipeChoice = choices.get(key);
 
-                if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice) {
-                    handleMaterialChoice(ingredients, materialChoice);
-                }
+                if (recipeChoice != null) {
+                    if (ingredients.containsKey(recipeChoice)) {
+                        ingredients.replace(recipeChoice, ingredients.get(recipeChoice) + 1);
+                    }
 
-                else if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
-                    handleExactChoice(ingredients, exactChoice);
+                    else {
+                        ingredients.put(recipeChoice, 1);
+                    }
                 }
             }
         }
+
+        return ingredients;
     }
 
-    private static void handleShapelessRecipe(Map<Material, Integer> ingredients, ShapelessRecipe shapelessRecipe) {
+    private static Map<RecipeChoice, Integer> handleShapelessRecipe(ShapelessRecipe shapelessRecipe) {
+        Map<RecipeChoice, Integer> ingredients = new HashMap<>();
+
         List<RecipeChoice> choices = shapelessRecipe.getChoiceList();
 
         for (RecipeChoice recipeChoice : choices) {
-            if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice) {
-                handleMaterialChoice(ingredients, materialChoice);
-            }
+            if (recipeChoice != null) {
+                if (ingredients.containsKey(recipeChoice)) {
+                    ingredients.replace(recipeChoice, ingredients.get(recipeChoice) + 1);
+                }
 
-            else if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
-                handleExactChoice(ingredients, exactChoice);
-            }
-        }
-    }
-
-    public static void handleMaterialChoice(Map<Material, Integer> ingredients, RecipeChoice.MaterialChoice materialChoice) {
-        List<Material> materials = materialChoice.getChoices();
-
-        for (Material material : materials) {
-            if (ingredients.containsKey(material)) {
-                ingredients.replace(material, ingredients.get(material) + 1);
-            }
-
-            else {
-                ingredients.put(material, 1);
+                else {
+                    ingredients.put(recipeChoice, 1);
+                }
             }
         }
-    }
 
-    public static void handleExactChoice(Map<Material, Integer> ingredients, RecipeChoice.ExactChoice exactChoice) {
-        List<ItemStack> itemStacks = exactChoice.getChoices();
-
-        for (ItemStack itemStack : itemStacks) {
-            if (ingredients.containsKey(itemStack.getType())) {
-                ingredients.replace(itemStack.getType(), ingredients.get(itemStack.getType()) + 1);
-            }
-
-            else {
-                ingredients.put(itemStack.getType(), 1);
-            }
-        }
+        return ingredients;
     }
 }
