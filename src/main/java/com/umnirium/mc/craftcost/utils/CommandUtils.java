@@ -9,7 +9,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
@@ -58,6 +57,8 @@ public class CommandUtils {
     }
 
     private static int executeNormalCalculation(CommandContext<CommandSourceStack> context) {
+        CommandSender sender = context.getSource().getSender();
+
         String materialName = context.getArgument("item", String.class);
         Material material = Material.matchMaterial(materialName);
 
@@ -65,8 +66,6 @@ public class CommandUtils {
             List<Recipe> recipes = plugin.getServer().getRecipesFor(new ItemStack(material));
 
             Map<Recipe, Map<RecipeChoice, Integer>> ingredients = RecipeUtils.ListIngredients(recipes);
-
-            CommandSender sender = context.getSource().getSender();
 
             StringBuilder message = new StringBuilder();
             int count = 1;
@@ -100,6 +99,10 @@ public class CommandUtils {
             }
 
             sender.sendMessage(MessageUtils.component(message.toString()));
+        }
+
+        else {
+            sender.sendMessage(MessageUtils.component("<red>Invalid item.</red>"));
         }
 
         return Command.SINGLE_SUCCESS;
