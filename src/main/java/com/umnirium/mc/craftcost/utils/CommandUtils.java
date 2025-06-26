@@ -1,11 +1,13 @@
 package com.umnirium.mc.craftcost.utils;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 
 import static com.umnirium.mc.craftcost.CraftCost.plugin;
 
@@ -15,11 +17,49 @@ public class CommandUtils {
     public static LiteralCommandNode<CommandSourceStack> createCommand() {
         return Commands.literal("craftcost")
                 .requires(ctx -> ctx.getSender().hasPermission("craftcost.command"))
+                .then(Commands.literal("normal")
+                        .requires(ctx -> ctx.getSender().hasPermission("craftcost.command.normal"))
+                        .then(Commands.argument("item", StringArgumentType.word())
+                            .suggests((context, builder) -> {
+                                for (Material material : Material.values()) {
+                                    if (material.isLegacy()) continue;
+
+                                    builder.suggest(material.name().toLowerCase());
+                                }
+
+                                return builder.buildFuture();
+                            })
+                                .executes(CommandUtils::executeNormalCalculation)
+                        )
+                )
+                .then(Commands.literal("recursive")
+                        .requires(ctx -> ctx.getSender().hasPermission("craftcost.command.recursive"))
+                        .then(Commands.argument("item", StringArgumentType.word())
+                                .suggests((context, builder) -> {
+                                    for (Material material : Material.values()) {
+                                        if (material.isLegacy()) continue;
+
+                                        builder.suggest(material.name().toLowerCase());
+                                    }
+
+                                    return builder.buildFuture();
+                                })
+                                .executes(CommandUtils::executeRecursiveCalculation)
+                        )
+                )
                 .then(Commands.literal("version")
                         .requires(ctx -> ctx.getSender().hasPermission("craftcost.command.version"))
                         .executes(CommandUtils::executeVersion)
                 )
                 .build();
+    }
+
+    private static int executeNormalCalculation(CommandContext<CommandSourceStack> context) {
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int executeRecursiveCalculation(CommandContext<CommandSourceStack> context) {
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int executeVersion(CommandContext<CommandSourceStack> context) {
