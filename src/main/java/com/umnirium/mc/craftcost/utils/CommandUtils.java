@@ -10,9 +10,13 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.inventory.Recipe;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static com.umnirium.mc.craftcost.CraftCost.LOGGER;
 import static com.umnirium.mc.craftcost.CraftCost.plugin;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -56,6 +60,13 @@ public class CommandUtils {
     }
 
     private static int executeNormalCalculation(CommandContext<CommandSourceStack> context) {
+        String material = context.getArgument("item", String.class);
+
+        if (MaterialUtils.isMaterialValid(Material.matchMaterial(material.toUpperCase()))) {
+            List<Recipe> recipes = RecipeUtils.getRecipes(Material.matchMaterial(material));
+            RecipeUtils.ListIngredients(recipes);
+        }
+
         return Command.SINGLE_SUCCESS;
     }
 
