@@ -13,10 +13,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import static com.umnirium.mc.craftcost.CraftCost.LOGGER;
 import static com.umnirium.mc.craftcost.CraftCost.plugin;
 
 @SuppressWarnings("UnstableApiUsage")
