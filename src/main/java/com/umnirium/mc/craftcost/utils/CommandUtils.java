@@ -10,7 +10,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -22,16 +21,10 @@ public class CommandUtils {
         String input = builder.getRemainingLowerCase();
 
         for (Material material : Material.values()) {
-            try {
-                if (material.isLegacy()) continue;
-
-                new ItemStack(material);
-            } catch (Exception e) {
-                continue;
-            }
-
-            if (material.name().toLowerCase().startsWith(input)) {
-                builder.suggest(material.name().toLowerCase());
+            if (MaterialUtils.isMaterialValid(material)) {
+                if (material.name().toLowerCase().startsWith(input)) {
+                    builder.suggest(material.name().toLowerCase());
+                }
             }
         }
 
