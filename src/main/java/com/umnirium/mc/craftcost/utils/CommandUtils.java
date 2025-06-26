@@ -45,13 +45,6 @@ public class CommandUtils {
                             .executes(CommandUtils::executeNormalCalculation)
                         )
                 )
-                .then(Commands.literal("recursive")
-                        .requires(ctx -> ctx.getSender().hasPermission("craftcost.command.recursive"))
-                        .then(Commands.argument("item", StringArgumentType.word())
-                                .suggests(CommandUtils::materialSuggestions)
-                                .executes(CommandUtils::executeRecursiveCalculation)
-                        )
-                )
                 .then(Commands.literal("version")
                         .requires(ctx -> ctx.getSender().hasPermission("craftcost.command.version"))
                         .executes(CommandUtils::executeVersion)
@@ -67,10 +60,6 @@ public class CommandUtils {
             RecipeUtils.ListIngredients(recipes);
         }
 
-        return Command.SINGLE_SUCCESS;
-    }
-
-    private static int executeRecursiveCalculation(CommandContext<CommandSourceStack> context) {
         return Command.SINGLE_SUCCESS;
     }
 
