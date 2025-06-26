@@ -1,0 +1,7 @@
+name: CraftCost
+version: ${version}
+main: com.umnirium.mc.craftcost.CraftCost
+description: A powerful utility plugin that calculates the exact resources needed to craft any item.
+author: mxu-exe
+website: https://github.com/mxu-exe
+api-version: '1.21.6'
