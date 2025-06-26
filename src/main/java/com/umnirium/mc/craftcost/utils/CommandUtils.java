@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
 import java.util.List;
@@ -54,10 +55,11 @@ public class CommandUtils {
     }
 
     private static int executeNormalCalculation(CommandContext<CommandSourceStack> context) {
-        String material = context.getArgument("item", String.class);
+        String materialName = context.getArgument("item", String.class);
+        Material material = Material.matchMaterial(materialName);
 
-        if (MaterialUtils.isMaterialValid(Material.matchMaterial(material.toUpperCase()))) {
-            List<Recipe> recipes = RecipeUtils.getRecipes(Material.matchMaterial(material));
+        if (material != null && MaterialUtils.isMaterialValid(material)) {
+            List<Recipe> recipes = plugin.getServer().getRecipesFor(new ItemStack(material));
 
             Map<Material, Integer> ingredients = RecipeUtils.ListIngredients(recipes);
 
@@ -65,7 +67,7 @@ public class CommandUtils {
 
             sender.sendMessage(MessageUtils.componentReplace("<aqua>[CraftCost]</aqua> <gray>Items needed for <material>:</gray>",
                     "material",
-                    Component.text(material, NamedTextColor.GOLD)
+                    Component.text(materialName, NamedTextColor.GOLD)
                     ));
 
             StringBuilder message = new StringBuilder();

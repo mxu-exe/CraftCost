@@ -7,26 +7,6 @@ import org.bukkit.inventory.*;
 import java.util.*;
 
 public class RecipeUtils {
-    public static List<Recipe> getRecipes(Material material) {
-        Iterator<Recipe> allRecipes = Bukkit.recipeIterator();
-
-        List<Recipe> recipes = new ArrayList<>();
-
-        while (allRecipes.hasNext()) {
-            Recipe recipe = allRecipes.next();
-
-            if (recipe == null) {
-                continue;
-            }
-
-            if (recipe.getResult().getType() == material) {
-                recipes.add(recipe);
-            }
-        }
-
-        return recipes;
-    }
-
     public static Map<Material, Integer> ListIngredients(List<Recipe> recipes) {
         Map<Material, Integer> ingredients = new HashMap<>();
 
