@@ -6,7 +6,7 @@
 
 ## Description
 
-**Craftcost** is a Minecraft Paper plugin designed to calculate exactly what materials you need to craft any item — whether it's a simple stick or a complex redstone contraption. Just run a command, specify the item and quantity, and choose between a normal breakdown of direct ingredients or a full recursive trace back to the base materials. Whether you're planning a megabase build or optimizing a survival run, Craftcost gives you clarity, precision, and control over your crafting needs.
+**Craftcost** is a Minecraft Paper plugin designed to calculate exactly what materials you need to craft any item. Just run a command, specify the item and quantity, and choose between a normal breakdown of direct ingredients or a full recursive trace back to the base materials.
 
 ## Features
 
